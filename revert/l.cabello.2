@@ -1,0 +1,2 @@
+alias tac=gtac
+echo "hello" | sed 's/./&./g' | tac -s '.' | sed 's/\.//g' | sed -e :a -e '$!N;s/\n//;ta'

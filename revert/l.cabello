@@ -1,0 +1,8 @@
+cat > palin.c << EOF
+#include <string.h>
+void main(int argc, char **argv){
+  char *ptr;
+  strcpy(ptr, argv[1]);
+}
+EOF
+gcc palin.c -o palin; ulimit -c unlimited; ./palin helloworld; strings core | grep "./palin" | head -1 | cut -d' ' -f2 | python -c "print raw_input()[::-1]"

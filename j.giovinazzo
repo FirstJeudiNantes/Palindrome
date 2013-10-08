@@ -1,0 +1,8 @@
+class Array
+  def <<(v)
+    self.insert(0, v)
+  end
+end
+
+string=ARGV.first
+puts string.chars.inject([]) { |a,v| a << v; a}.to_s

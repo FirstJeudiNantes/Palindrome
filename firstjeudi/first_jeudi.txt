@@ -1,0 +1,57 @@
+2012-04-06 - Équivalent de rev le plus compliqué possible
+---------------------------------------------------------
+
+Avec bash et GNU sed
+~~~~~~~~~~~~~~~~~~~~
+
+reverse() { <<< "$*" sed 's/./\n&/2g; q' | sed -n 'G; h; $ { x; s/\n//g; p }'; }
+
+Le premier sed fait pivoter le texte en paramètre d'un quart de tour dans le sens horaire, donc l'écrit verticalement.
+Le second sed fait la même chose donc remet le texte horizontalement mais en sens inverse (à 180°).
+
+$ reverse TEXTE
+ETXET
+
+
+Solution plus tordue
+~~~~~~~~~~~~~~~~~~~~
+
+La fonction qui suit combine les deux étapes précédentes dans un seul sed, mais ne fait que l'un des deux.
+Le résultat c'est qu'elle fait effectuer un quart de tour dans le sens horaire au texte fourni sur stdin.
+
+_() { sed -n 's/./|&/2g; G; h; $ { x; s/\n//g; y/|/\n/; p }'; }
+reverse() { <<< "$*" _|_; }
+
+Démonstration :
+
+------------------------------------------
+# reverse TEXTE
+ETXET
+
+# echo 12345 |_
+1
+2
+3
+4
+5
+
+# echo 12345 |_|_
+54321
+
+# echo 12345 |_|_|_
+5
+4
+3
+2
+1
+
+# echo 12345 |_|_|_|_
+12345
+------------------------------------------
+
+
+Solution triche
+~~~~~~~~~~~~~~~
+
+echo TEXTE | eval $'\x72\x65\x76'
+

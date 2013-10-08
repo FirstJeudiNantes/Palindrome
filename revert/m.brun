@@ -1,0 +1,4 @@
+word=$1
+for i in `seq 1 $(expr length $word)`; do
+  echo -n $word | tail -c$i | head -c1
+done

@@ -1,0 +1,3 @@
+rm -rf palinpabo;s=$(echo "hello world" | sed -e 's/ /_/' -e 's/./& /g'); mkdir -p palinpabo; i=999; for c in $s; do touch palinpabo/$i-$c; i=$(expr $i - 1); done;echo $(for l in $(ls palinpabo); do c=$(echo $l | cut -d'-' -f2); echo $c; done) | tr -d ' ' | tr -s '_' ' '
+
+

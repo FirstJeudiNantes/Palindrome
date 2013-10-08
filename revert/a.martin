@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+
+require 'socket'
+
+exit 1 unless ARGV[0]
+word = ARGV[0]
+size = word.size
+
+`tc qdisc del dev lo root`
+`ip6tables -F OUTPUT`
+`tc qdisc add dev lo root handle 999 htb`
+
+chars = word.chars.to_a
+inverted = []
+for i in 1..size
+  fork { print `nc6 -u -t 1 -l ::1 -p #{i}` }
+end
+for i in 1..size
+  `tc class add dev lo parent 999: classid #{i}88 htb rate 100Mbps`
+  `tc qdisc add dev lo parent 999:#{i}88 handle #{i}77 netem delay #{size - i}s`
+  #`tc class add dev lo parent 999:#{i} classid #{i} htb rate 100Mbps`
+  #`ip6tables -t mangle -A OUTPUT -p udp --dport #{i} -j CLASSIFY --set-class 999:#{i}88`
+  `tc filter add dev lo parent 999: protocol ipv6 u32 match ip6 dport #{i} 0xffff flowid 999:#{i}88`
+  fork { `echo #{chars[i - 1]} | nc6 -u ::1 #{i}` }
+end
